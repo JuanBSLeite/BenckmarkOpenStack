@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/LauraTargets.cmake")
+
+include(CMakeFindDependencyMacro)
+find_dependency(ROOT @ROOT_VERSION@)
+
+set_and_check(LAURA_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set_and_check(LAURA_LIB_DIR "@PACKAGE_LIB_INSTALL_DIR@")
+set_and_check(LAURA_DATA_DIR "@PACKAGE_DATA_INSTALL_DIR@")
+
+check_required_components("@PROJECT_NAME@")

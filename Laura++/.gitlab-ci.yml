@@ -1,0 +1,185 @@
+stages:
+  - checks
+  - build
+  - test
+
+variables:
+  LCG_VERSION: "LCG_105"
+  GCC_VERSION: "gcc13"
+  CLANG_VERSION: "clang16"
+  BUILD_TYPE: "Release"
+  BUILD_ROOFIT_TASK: "OFF"
+  BUILD_DOCS: "OFF"
+
+.production_image:
+  variables:
+    LCG_OS: x86_64-el9
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+  tags:
+    - cvmfs
+
+.legacy_os_image:
+  variables:
+    LCG_OS: x86_64-centos7
+    LCG_VERSION: "LCG_103"
+    GCC_VERSION: "gcc12"
+    CLANG_VERSION: "clang12"
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/centos7-devel:latest
+  tags:
+    - cvmfs
+
+.lcg_setup:
+  before_script:
+    - set +e && source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh $LCG_VERSION $LCG_OS-$LCG_COMPILER; set -e
+
+.check_template:
+  stage: checks
+  variables:
+    LCG_COMPILER: "$CLANG_VERSION-opt"
+  extends:
+    - .production_image
+    - .lcg_setup
+
+.build_template:
+  stage: build
+  extends:
+    - .lcg_setup
+  script:
+    - mkdir install
+    - mkdir build && cd build
+    - cmake -DCMAKE_BUILD_TYPE:STRING=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX:PATH=$CI_PROJECT_DIR/install -DLAURA_BUILD_EXAMPLES:BOOL=ON -DLAURA_BUILD_DOCS:BOOL=$BUILD_DOCS -DLAURA_BUILD_ROOFIT_TASK:BOOL=$BUILD_ROOFIT_TASK $CI_PROJECT_DIR
+    - cmake --build .
+    - cmake --build . --target install
+
+.dev_rules:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      allow_failure: false
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      allow_failure: true
+
+check_formatting:
+  extends:
+    - .check_template
+  script:
+    - bash applyFormatting.sh > /dev/null
+    - git status --porcelain | grep '^ M' || exit 0
+    - echo "The above files do not comply with formatting requirements"
+    - exit 1
+
+build_legacy_clang_opt:
+  variables:
+    LCG_COMPILER: "$CLANG_VERSION-opt"
+  extends:
+    - .legacy_os_image
+    - .build_template
+
+build_legacy_gcc_opt:
+  variables:
+    LCG_COMPILER: "$GCC_VERSION-opt"
+  extends:
+    - .legacy_os_image
+    - .build_template
+
+build_production_clang_opt:
+  variables:
+    LCG_COMPILER: "$CLANG_VERSION-opt"
+  extends:
+    - .production_image
+    - .build_template
+
+build_production_gcc_opt:
+  variables:
+    LCG_COMPILER: "$GCC_VERSION-opt"
+  extends:
+    - .production_image
+    - .build_template
+
+build_production_gcc_dbg:
+  variables:
+    LCG_COMPILER: "$GCC_VERSION-dbg"
+    BUILD_TYPE: "Debug"
+    BUILD_ROOFIT_TASK: "ON"
+    BUILD_DOCS: "ON"
+  extends:
+    - .production_image
+    - .build_template
+  artifacts:
+    paths:
+      - install
+    expire_in: 1 day
+
+build_dev3LCG_gcc_opt:
+  variables:
+    LCG_VERSION: "dev3/latest"
+    GCC_VERSION: "gcc15"
+    LCG_COMPILER: "$GCC_VERSION-opt"
+    BUILD_ROOFIT_TASK: "ON"
+  extends:
+    - .production_image
+    - .build_template
+  rules:
+    - !reference [.dev_rules, rules]
+
+build_dev4LCG_gcc_opt:
+  variables:
+    LCG_VERSION: "dev4/latest"
+    GCC_VERSION: "gcc15"
+    LCG_COMPILER: "$GCC_VERSION-opt"
+    BUILD_ROOFIT_TASK: "ON"
+  extends:
+    - .production_image
+    - .build_template
+  rules:
+    - !reference [.dev_rules, rules]
+
+build_dev3LCG_clang_opt:
+  variables:
+    LCG_VERSION: "dev3/latest"
+    CLANG_VERSION: "clang19"
+    LCG_COMPILER: "$CLANG_VERSION-opt"
+    BUILD_ROOFIT_TASK: "ON"
+  extends:
+    - .production_image
+    - .build_template
+  rules:
+    - !reference [.dev_rules, rules]
+
+build_dev4LCG_clang_opt:
+  variables:
+    LCG_VERSION: "dev4/latest"
+    CLANG_VERSION: "clang19"
+    LCG_COMPILER: "$CLANG_VERSION-opt"
+    BUILD_ROOFIT_TASK: "ON"
+  extends:
+    - .production_image
+    - .build_template
+  rules:
+    - !reference [.dev_rules, rules]
+
+.test_template:
+  stage: test
+  variables:
+    LCG_COMPILER: "$GCC_VERSION-dbg"
+  extends:
+    - .production_image
+    - .lcg_setup
+  dependencies:
+    - build_production_gcc_dbg
+  artifacts:
+    paths:
+      - runtests
+    expire_in: 1 day
+  script:
+    - export PATH=$CI_PROJECT_DIR/install/bin:$PATH
+    - mkdir runtests && cd runtests
+    - $TEST_EXE gen $TEST_GEN_OPTIONS
+    - $TEST_EXE fit $TEST_FIT_OPTIONS
+
+test_3pi:
+  variables:
+    TEST_EXE: "GenFit3pi"
+    TEST_GEN_OPTIONS: "1 0"
+    TEST_FIT_OPTIONS: "0 1 0"
+  extends:
+    - .test_template

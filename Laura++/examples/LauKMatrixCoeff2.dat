@@ -1,0 +1,40 @@
+#
+# Copyright 2008 University of Warwick
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Laura++ package authors:
+# John Back
+# Paul Harrison
+# Thomas Latham
+#
+# File for K-pi K-matrix S-wave amplitude. Values are guesses - need updating.
+# First, define the indices of the phase-space channels defined by
+# the LauKMatrixPropagator::KMatrixChannel enum
+Channels 6 7 8
+# Next, define the bare pole masses and coupling constants g^(alpha)_j.
+# First int = alpha (pole index number), 2nd number = pole mass (GeV/c^2), while
+# the other numbers are constants for each channel j = 1 to N for the given pole
+Pole 1 1.235 1.739 1.0 0.112
+Pole 2 1.810 0.454 0.8 0.391
+Pole 3 1.947 0.493 0.3 -0.368
+# Next, define the scattering f_{ij} constants. Here, the first integer is
+# the scattering channel index, while the other numbers = f_{ij}, j = 1 to N
+Scatt 1 0.880 0.430 0.170
+# Finally, define the "Alder-zero constants"
+# mSq0 s0Scatt s0Prod sA sA0
+mSq0 1.0
+s0Scatt -3.92637
+s0Prod -3.0
+sA 1.0
+sA0 -0.15

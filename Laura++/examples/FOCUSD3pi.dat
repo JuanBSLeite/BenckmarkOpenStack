@@ -1,0 +1,45 @@
+#
+# Copyright 2008 University of Warwick
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Laura++ package authors:
+# John Back
+# Paul Harrison
+# Thomas Latham
+#
+# File for pi-pi K-matrix S-wave amplitude.
+# Coeffs from FOCUS D->3pi paper (hep-ex/0312040)
+# First, define the indices of the phase-space channels defined by
+# the LauKMatrixPropagator::KMatrixChannel enum
+Channels 1 2 3 4 5
+# Next, define the bare pole masses and coupling constants g^(alpha)_j.
+# First int = alpha (pole index number), 2nd number = pole mass (GeV/c^2), while
+# the other numbers are constants for each channel j = 1 to N for the given pole
+Pole 1 0.65100 0.24844 -0.52523 0.00000 -0.38878 -0.36397
+Pole 2 1.20720 0.91779 0.55427 0.00000 0.38705 0.29448
+Pole 3 1.56122 0.37024 0.23591 0.62605 0.18409 0.18923
+Pole 4 1.21257 0.34501 0.39642 0.97644 0.19746 0.00357
+Pole 5 1.81746 0.15770 -0.17915 -0.90100 -0.00931 0.20689
+# Next, define the scattering f_{ij} constants. Here, the first integer is
+# the scattering channel index, while the other numbers = f_{ij}, j = 1 to N
+Scatt 1 0.26681 0.16583 -0.19840 0.32808 0.31193
+# We usually assume symmetry: f_{ji} = f_{ij}. Otherwise, uncomment this line
+#ScattSymmetry 0
+# Finally, define the "Adler-zero" constants
+# mSq0 s0Scatt s0Prod sA sA0
+mSq0 1.0
+s0Scatt -3.30564
+s0Prod -1.0
+sA 1.0
+sA0 -0.2
