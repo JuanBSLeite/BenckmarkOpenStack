@@ -7,6 +7,9 @@ export PATH="$HOME/miniconda/bin:$PATH"
 conda init bash
 source ~/.bashrc
 
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
 # Install mamba for faster environment management
 conda install mamba -n base -c conda-forge -y
 
