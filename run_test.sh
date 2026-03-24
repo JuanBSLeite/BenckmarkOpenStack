@@ -28,6 +28,10 @@ fi
 
 # compile Laura
 cd Laura++
+if [ -d "build" ]; then
+    echo "Removing existing build directory."
+    rm -rf build
+fi
 mkdir build
 cd build
 cmake .. -DLAURA_BUILD_ROOFIT_TASK=ON -DLAURA_BUILD_EXAMPLES=ON -DLAURA_BUILD_TESTS=ON
