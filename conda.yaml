@@ -8,4 +8,5 @@ dependencies:
   - gxx
   - make
   - binutils
+  - git
   - root
