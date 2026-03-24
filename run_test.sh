@@ -31,8 +31,8 @@ make -j$(nproc)
 localtime=$(date +"%Y-%m-%d %H:%M:%S")
 echo "Starting tests at: $localtime"
 
-time ./examples/GenFit3pi gen 100
-time ./examples/GenFit3pi fit 0 100
+time ./examples/GenFit3pi gen 1000
+time ./examples/GenFit3pi fit 0 1000
 
 endtime=$(date +"%Y-%m-%d %H:%M:%S")
 echo "Finished tests at: $endtime"
