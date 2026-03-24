@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#install miniconda and mamba
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+bash miniconda.sh -b -p $HOME/miniconda
+export PATH="$HOME/miniconda/bin:$PATH" 
+conda init bash
+source ~/.bashrc
+
 # Create conda environment from conda.yaml
 mamba env create -f conda.yaml -y
 
