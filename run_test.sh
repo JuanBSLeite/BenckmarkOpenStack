@@ -7,6 +7,9 @@ export PATH="$HOME/miniconda/bin:$PATH"
 conda init bash
 source ~/.bashrc
 
+# Install mamba for faster environment management
+conda install mamba -n base -c conda-forge -y
+
 # Create conda environment from conda.yaml
 mamba env create -f conda.yaml -y
 
