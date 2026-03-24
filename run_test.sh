@@ -1,23 +1,30 @@
 #!/bin/bash
 
-#install miniconda and mamba
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-bash miniconda.sh -b -p $HOME/miniconda
-export PATH="$HOME/miniconda/bin:$PATH" 
-conda init bash
-source ~/.bashrc
+## add flag to skip conda usage
 
-conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
-conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+if [ "$1" == "--no-conda" ]; then
+    echo "Skipping conda installation and environment setup."
+else
 
-# Install mamba for faster environment management
-conda install mamba -n base -c conda-forge -y
+    #install miniconda and mamba
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    bash miniconda.sh -b -p $HOME/miniconda
+    export PATH="$HOME/miniconda/bin:$PATH" 
+    conda init bash
+    source ~/.bashrc
 
-# Create conda environment from conda.yaml
-mamba env create -f conda.yaml -y
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
-# Activate the environment
-conda activate laura-env
+    # Install mamba for faster environment management
+    conda install mamba -n base -c conda-forge -y
+
+    # Create conda environment from conda.yaml
+    mamba env create -f conda.yaml -y
+
+    # Activate the environment
+    conda activate laura-env
+fi
 
 # compile Laura
 cd Laura++
